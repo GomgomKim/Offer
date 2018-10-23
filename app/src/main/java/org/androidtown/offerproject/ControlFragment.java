@@ -87,8 +87,8 @@ public class ControlFragment extends Fragment {
                 }
                 else if(fire_power==0){
                     ((Bluetooth)getActivity()).sendData("0");
-                }*/
-
+                }
+*/
                 //동영상용
                 if(fire_power==1){
                     Toast.makeText(getContext(), "불의세기 : 약 (sendData)", Toast.LENGTH_SHORT).show();
@@ -102,7 +102,7 @@ public class ControlFragment extends Fragment {
                 else if(fire_power==4){
                     Toast.makeText(getContext(), "불의세기 : MAX (sendData)", Toast.LENGTH_SHORT).show();
                 }
-                else if(fire_power==0){
+                else if(fire_power==0) {
                     Toast.makeText(getContext(), "불의세기 : OFF (sendData)", Toast.LENGTH_SHORT).show();
                 }
             }

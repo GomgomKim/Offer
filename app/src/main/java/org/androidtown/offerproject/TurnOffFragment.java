@@ -44,8 +44,6 @@ public class TurnOffFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_turn_off, container, false);
     }
 
-
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);

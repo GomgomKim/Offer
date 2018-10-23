@@ -62,7 +62,7 @@ public class Bluetooth extends AppCompatActivity {
     }
 
     //블루투스 사용가능 여부
-    void checkBluetooth()
+    /*void checkBluetooth()
     {
         this.mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (this.mBluetoothAdapter == null)
@@ -78,7 +78,7 @@ public class Bluetooth extends AppCompatActivity {
             return;
         }
         selectDevice();
-    }
+    }*/
 
 
 
