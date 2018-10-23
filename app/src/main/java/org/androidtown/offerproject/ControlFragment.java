@@ -88,11 +88,6 @@ public class ControlFragment extends Fragment {
                 else if(fire_power==0){
                     ((Bluetooth)getActivity()).sendData("0");
                 }
-<<<<<<< HEAD
-*/
-=======
-
->>>>>>> e66ac5d01545d05ac04397c2871a9e6ff6405a87
                 //동영상용
                 /*if(fire_power==1){
                     Toast.makeText(getContext(), "불의세기 : 약 (sendData)", Toast.LENGTH_SHORT).show();
