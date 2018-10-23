@@ -73,7 +73,7 @@ public class ControlFragment extends Fragment {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 //드래그 멈출때 발생
                 //실제 사용
-                /*if(fire_power==1){
+                if(fire_power==1){
                     ((Bluetooth)getActivity()).sendData("1");
                 }
                 else if(fire_power==2){
@@ -88,9 +88,13 @@ public class ControlFragment extends Fragment {
                 else if(fire_power==0){
                     ((Bluetooth)getActivity()).sendData("0");
                 }
+<<<<<<< HEAD
 */
+=======
+
+>>>>>>> e66ac5d01545d05ac04397c2871a9e6ff6405a87
                 //동영상용
-                if(fire_power==1){
+                /*if(fire_power==1){
                     Toast.makeText(getContext(), "불의세기 : 약 (sendData)", Toast.LENGTH_SHORT).show();
                 }
                 else if(fire_power==2){
@@ -104,7 +108,7 @@ public class ControlFragment extends Fragment {
                 }
                 else if(fire_power==0) {
                     Toast.makeText(getContext(), "불의세기 : OFF (sendData)", Toast.LENGTH_SHORT).show();
-                }
+                }*/
             }
         });
     }

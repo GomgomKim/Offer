@@ -53,10 +53,10 @@ public class TurnOffFragment extends Fragment {
             public void onClick(View view) {
                 btn.setImageResource(R.drawable.switchoff);
                 //실제 사용할것
-                //((Bluetooth)getActivity()).sendData("0");
+                ((Bluetooth)getActivity()).sendData("0");
 
                 //앱 시연용
-                Toast.makeText(getContext(), "불이꺼짐 (sendData)", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getContext(), "불이꺼짐 (sendData)", Toast.LENGTH_SHORT).show();
             }
         });
     }

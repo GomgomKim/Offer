@@ -19,15 +19,16 @@ import android.widget.Toast;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 
 public class TimerFragment extends Fragment {
 
-    ArrayAdapter<String> arrayAdapter;
-    ListView listview_m, listview_s;
-    ArrayList<String> clock_num;
+    ArrayAdapter<String> arrayAdapter, foodAdapter;
+    ListView listview_m, listview_s, food_list;
+    ArrayList<String> clock_num, food_list_array;
     TextView textview_m, textview_s;
     TextView upper_text_m, upper_Text_s;
     String minute="";
@@ -108,8 +109,8 @@ public class TimerFragment extends Fragment {
                     @Override
                     public void onFinish() {
                         //타이머 다 돌았을때 => 전원 꺼짐
-                        Toast.makeText(getContext(), "전원 OFF (sendData)", Toast.LENGTH_SHORT).show();
-                        //((Bluetooth)getActivity()).sendData("0");
+                        //Toast.makeText(getContext(), "전원 OFF (sendData)", Toast.LENGTH_SHORT).show();
+                        ((Bluetooth)getActivity()).sendData("0");
                     }
                 }.start();
 
@@ -130,6 +131,8 @@ public class TimerFragment extends Fragment {
             }
         });
 
+        food_listview();
+
     }
 
     public void init(){
@@ -137,6 +140,7 @@ public class TimerFragment extends Fragment {
         listview_s = (ListView)getActivity().findViewById(R.id.list_second);
         textview_m = (TextView)getActivity().findViewById(R.id.text_minute);
         textview_s = (TextView)getActivity().findViewById(R.id.text_second);
+
         start = (Button) getActivity().findViewById(R.id.start);
         clear = (Button) getActivity().findViewById(R.id.clear);
         upper_text_m = (TextView)getActivity().findViewById(R.id.textView__upper_m);
@@ -147,6 +151,8 @@ public class TimerFragment extends Fragment {
         textview_m.setTypeface(typeface);
         upper_text_m.setTypeface(typeface);
         upper_Text_s.setTypeface(typeface);
+
+        food_list = (ListView)getActivity().findViewById(R.id.food_list);
     }
 
     public void set_timer(){
@@ -223,6 +229,93 @@ public class TimerFragment extends Fragment {
 
         };
         return tempTask;
+    }
+
+    public void food_listview(){
+        food_list_array = new ArrayList<>();
+        food_list_array.add("대동단 감자");
+        food_list_array.add("정든란 계란");
+        food_list_array.add("리서차 라면");
+        food_list_array.add("국민과 함께라면");
+        foodAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, food_list_array){
+            @NonNull
+            @Override
+            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                TextView tv = (TextView) view.findViewById(android.R.id.text1);
+                tv.setTextColor(Color.BLACK);
+                Typeface typeface= Typeface.createFromAsset(getActivity().getAssets(),"fonts/210 앱굴림R.ttf");
+                tv.setTypeface(typeface);
+                return view;
+
+            }
+        };
+        food_list.setAdapter(foodAdapter);
+        food_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position){
+                    case 0:
+                        textview_s.setText("05");
+                        start_timer();
+                        break;
+                    case 1:
+                        textview_s.setText("10");
+                        start_timer();
+                        break;
+                    case 2:
+                        textview_s.setText("20");
+                        start_timer();
+                        break;
+                    case 3:
+                        textview_s.setText("30");
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+    }
+
+    public void start_timer(){
+        if(startcheck==false){
+            startcheck=true;
+            minute = textview_m.getText().toString();
+            second = textview_s.getText().toString();
+            minutenum=Integer.parseInt(minute);
+            secondnum=Integer.parseInt(second);
+            minuteanswer=Integer.parseInt(minute);
+            secondanswer=Integer.parseInt(second);
+            if((minutenum==0 && secondnum==0) ||(minutenum<=0 && secondnum<=0)){
+                Toast.makeText(getContext(), "먼저, 분과 초를 선택해 주세요 !", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                tt=timerTaskMaker();
+                timer.schedule(tt,1000,1000);
+//                System.out.println(minuteanswer);
+//                System.out.println(secondanswer);
+
+            }
+        }
+
+        minuteanswer=minuteanswer*60;
+        answersum=(minuteanswer + secondanswer)*1000;
+
+        new CountDownTimer(answersum,1000){
+            @Override
+            public void onTick(long l) {
+
+
+            }
+
+
+            @Override
+            public void onFinish() {
+                //타이머 다 돌았을때 => 전원 꺼짐
+                //Toast.makeText(getContext(), "전원 OFF (sendData)", Toast.LENGTH_SHORT).show();
+                //((Bluetooth)getActivity()).sendData("0");
+            }
+        }.start();
     }
 
 }
