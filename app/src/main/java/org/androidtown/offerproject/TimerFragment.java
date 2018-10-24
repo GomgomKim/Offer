@@ -13,9 +13,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.androidtown.offerproject.Bluetooth;
+import org.androidtown.offerproject.R;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -46,6 +51,8 @@ public class TimerFragment extends Fragment {
     String mStrDelimiter = "\n";
     long timeleft;
     CountDownTimer countDown;
+    LinearLayout layout1, layout2, layout3;
+    ImageView upperimg;
 
 
 
@@ -155,6 +162,13 @@ public class TimerFragment extends Fragment {
         upper_Text_s.setTypeface(typeface);
 
         food_list = (ListView)getActivity().findViewById(R.id.food_list);
+
+        layout1 = (LinearLayout)getActivity().findViewById(R.id.layout1);
+        layout2 = (LinearLayout)getActivity().findViewById(R.id.layout2);
+        layout3 = (LinearLayout)getActivity().findViewById(R.id.layout3);
+
+        upperimg = (ImageView)getActivity().findViewById(R.id.upper_img);
+
     }
 
     public void set_timer(){
@@ -302,6 +316,12 @@ public class TimerFragment extends Fragment {
 
     //계란 반숙
     public void over_easy(){
+        //시작하면 레이아웃 바 그래프로 바뀜
+        layout1.setVisibility(View.GONE);
+        layout2.setVisibility(View.GONE);
+        layout3.setVisibility(View.GONE);
+        upperimg.setVisibility(View.VISIBLE);
+
         //맨처음 강불로 시작
         //((Bluetooth)getActivity()).sendData("4");
         Toast.makeText(getContext(), "불 세기 MAX로 전환합니다.", Toast.LENGTH_SHORT).show();
@@ -336,6 +356,11 @@ public class TimerFragment extends Fragment {
 
             @Override
             public void onFinish() {
+                // 끝나면 레이아웃 원상복귀
+                layout1.setVisibility(View.VISIBLE);
+                layout2.setVisibility(View.VISIBLE);
+                layout3.setVisibility(View.VISIBLE);
+                upperimg.setVisibility(View.GONE);
                 //타이머 다 돌았을때 => 전원 꺼짐
                 Toast.makeText(getContext(), "요리 완료. 불이 꺼집니다.", Toast.LENGTH_SHORT).show();
                 //((Bluetooth)getActivity()).sendData("0");
