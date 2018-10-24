@@ -44,6 +44,8 @@ public class TimerFragment extends Fragment {
     Button start, clear;
     OutputStream mOutputStream = null;
     String mStrDelimiter = "\n";
+    long timeleft;
+    CountDownTimer countDown;
 
 
 
@@ -233,10 +235,12 @@ public class TimerFragment extends Fragment {
 
     public void food_listview(){
         food_list_array = new ArrayList<>();
-        food_list_array.add("대동단 감자");
-        food_list_array.add("정든란 계란");
-        food_list_array.add("리서차 라면");
-        food_list_array.add("국민과 함께라면");
+        food_list_array.add("달걀 반숙");
+        food_list_array.add("달걀 완숙");
+        food_list_array.add("고구마");
+        food_list_array.add("감자");
+        food_list_array.add("찐만두");
+        food_list_array.add("물만두");
         foodAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, food_list_array){
             @NonNull
             @Override
@@ -256,19 +260,38 @@ public class TimerFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position){
                     case 0:
-                        textview_s.setText("05");
-                        start_timer();
+                        /* 계란반숙)
+                        1. 처음에 강불에서 5분
+                        2. 물이 끓으면 중불로 줄이기
+                        3. 중불에서 7분 삶기
+                        */
+                        over_easy();
                         break;
                     case 1:
-                        textview_s.setText("10");
-                        start_timer();
+                        /*계란완숙)
+                        1. 처음에 강불에서 5분
+                        2. 물이 끓으면 중불로 줄이기
+                        3. 중불에서 11분 삶기
+                        */
+                        over_hard();
                         break;
                     case 2:
-                        textview_s.setText("20");
-                        start_timer();
+                        /*
+                        감자)
+                        1. 강불로 5분
+                        2.  아주 약한불로 20분
+                        3. 8분은 끈채로 그대로 두기
+                        */
+                        Toast.makeText(getContext(), "제작 중입니다.", Toast.LENGTH_SHORT).show();
                         break;
                     case 3:
-                        textview_s.setText("30");
+                        Toast.makeText(getContext(), "제작 중입니다.", Toast.LENGTH_SHORT).show();
+                        break;
+                    case 4:
+                        Toast.makeText(getContext(), "제작 중입니다.", Toast.LENGTH_SHORT).show();
+                        break;
+                    case 5:
+                        Toast.makeText(getContext(), "제작 중입니다.", Toast.LENGTH_SHORT).show();
                         break;
                     default:
                         break;
@@ -277,7 +300,15 @@ public class TimerFragment extends Fragment {
         });
     }
 
-    public void start_timer(){
+    //계란 반숙
+    public void over_easy(){
+        //맨처음 강불로 시작
+        //((Bluetooth)getActivity()).sendData("4");
+        Toast.makeText(getContext(), "불 세기 MAX로 전환합니다.", Toast.LENGTH_SHORT).show();
+
+        //12분동안 요리
+        textview_m.setText("12");
+        textview_s.setText("00");
         if(startcheck==false){
             startcheck=true;
             minute = textview_m.getText().toString();
@@ -286,36 +317,78 @@ public class TimerFragment extends Fragment {
             secondnum=Integer.parseInt(second);
             minuteanswer=Integer.parseInt(minute);
             secondanswer=Integer.parseInt(second);
-            if((minutenum==0 && secondnum==0) ||(minutenum<=0 && secondnum<=0)){
-                Toast.makeText(getContext(), "먼저, 분과 초를 선택해 주세요 !", Toast.LENGTH_SHORT).show();
-            }
-            else{
-                tt=timerTaskMaker();
-                timer.schedule(tt,1000,1000);
-//                System.out.println(minuteanswer);
-//                System.out.println(secondanswer);
-
-            }
+            tt=timerTaskMaker();
+            timer.schedule(tt,1000,1000);
         }
-
         minuteanswer=minuteanswer*60;
         answersum=(minuteanswer + secondanswer)*1000;
-
-        new CountDownTimer(answersum,1000){
+        countDown = new CountDownTimer(answersum,1000){
             @Override
-            public void onTick(long l) {
 
-
+            public void onTick(long remain_time_millisec) {
+                timeleft = (remain_time_millisec/1000) + 1; // 남은시간(초)
+                //Toast.makeText(getContext(), String.valueOf(remain_time_millisec), Toast.LENGTH_SHORT).show();
+                if(timeleft == 420) // 타이머 7분남았을때
+                    //((Bluetooth)getActivity()).sendData("2");
+                    Toast.makeText(getContext(), "중불로 전환합니다.", Toast.LENGTH_SHORT).show();
             }
 
 
             @Override
             public void onFinish() {
                 //타이머 다 돌았을때 => 전원 꺼짐
-                //Toast.makeText(getContext(), "전원 OFF (sendData)", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "요리 완료. 불이 꺼집니다.", Toast.LENGTH_SHORT).show();
                 //((Bluetooth)getActivity()).sendData("0");
             }
         }.start();
     }
+
+    //계란 완숙
+    public void over_hard(){
+        //맨처음 강불로 시작
+        //((Bluetooth)getActivity()).sendData("4");
+        Toast.makeText(getContext(), "불 세기 MAX로 전환합니다.", Toast.LENGTH_SHORT).show();
+
+        //16분동안 요리
+        textview_m.setText("16");
+        textview_s.setText("00");
+        if(startcheck==false){
+            startcheck=true;
+            minute = textview_m.getText().toString();
+            second = textview_s.getText().toString();
+            minutenum=Integer.parseInt(minute);
+            secondnum=Integer.parseInt(second);
+            minuteanswer=Integer.parseInt(minute);
+            secondanswer=Integer.parseInt(second);
+            tt=timerTaskMaker();
+            timer.schedule(tt,1000,1000);
+        }
+        minuteanswer=minuteanswer*60;
+        answersum=(minuteanswer + secondanswer)*1000;
+        countDown = new CountDownTimer(answersum,1000){
+            @Override
+
+            public void onTick(long remain_time_millisec) {
+                timeleft = (remain_time_millisec/1000) + 1; //남은시간(초)
+                //Toast.makeText(getContext(), String.valueOf(remain_time_millisec), Toast.LENGTH_SHORT).show();
+                if(timeleft == 720) //타이머 12분 남았을때
+                    //((Bluetooth)getActivity()).sendData("2");
+                    Toast.makeText(getContext(), "중불로 전환합니다.", Toast.LENGTH_SHORT).show();
+            }
+
+
+            @Override
+            public void onFinish() {
+                //타이머 다 돌았을때 => 전원 꺼짐
+                Toast.makeText(getContext(), "요리 완료. 불이 꺼집니다.", Toast.LENGTH_SHORT).show();
+                //((Bluetooth)getActivity()).sendData("0");
+            }
+        }.start();
+    }
+
+
+
+
+
 
 }
