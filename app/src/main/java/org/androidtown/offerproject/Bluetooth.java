@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -57,12 +58,12 @@ public class Bluetooth extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth);
-        //checkBluetooth();
+//        checkBluetooth();
         Toast.makeText(this, "블루투스가 연결된 상태입니다.", Toast.LENGTH_SHORT).show();
     }
 
     //블루투스 사용가능 여부
-    /*void checkBluetooth()
+    void checkBluetooth()
     {
         this.mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (this.mBluetoothAdapter == null)
@@ -78,7 +79,7 @@ public class Bluetooth extends AppCompatActivity {
             return;
         }
         selectDevice();
-    }*/
+    }
 
 
 
@@ -208,7 +209,7 @@ public class Bluetooth extends AppCompatActivity {
 
     }
 
-    //아두이노로 데이터 전송 (Fragment 에서 쓰일듯..)
+    //아두이노로 데이터 전송 (Fragment 에서 쓰는것)
     public void sendData(String paramString)
     {
         paramString = paramString + this.mStrDelimiter;
@@ -224,8 +225,21 @@ public class Bluetooth extends AppCompatActivity {
         }
     }
 
-
-
+    public int recieveData(){
+        byte[] buffer = new byte[1024];
+        int bytes = 0;
+        try
+        {
+            bytes = this.mInputStream.read(buffer);
+            return bytes;
+        }
+        catch (Exception e) //데이터 전송중 오류났을 때
+        {
+            Toast.makeText(getApplicationContext(), "데이터 수신 중 오류 발생.", Toast.LENGTH_SHORT).show();
+            finish(); //액티비티 종료
+        }
+        return bytes;
+    }
 
 
     //frame 코드 (각 버튼마다 프레임 변경)
