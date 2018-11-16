@@ -1,9 +1,19 @@
 package org.androidtown.offerproject;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -43,10 +53,10 @@ public class TimerFragment extends Fragment {
     int minuteanswer=0; //설정한 시간 저장
     int secondanswer=0;
     int answersum=0;
-    TimerTask tt;
-    Timer timer;
+    TimerTask tt, timerTask;
+    Timer timer, start_alarm;
     boolean startcheck=false;
-    Button start, clear;
+    Button start, clear, food_add;
     OutputStream mOutputStream = null;
     String mStrDelimiter = "\n";
     long timeleft;
@@ -54,7 +64,7 @@ public class TimerFragment extends Fragment {
     LinearLayout layout1, layout2, layout3;
     ImageView upperimg;
 
-
+    private static MediaPlayer mp;
 
     public TimerFragment() {
         // Required empty public constructor
@@ -130,6 +140,10 @@ public class TimerFragment extends Fragment {
         clear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                layout1.setVisibility(View.VISIBLE);
+                layout2.setVisibility(View.VISIBLE);
+                layout3.setVisibility(View.VISIBLE);
+                upperimg.setVisibility(View.GONE);
                 startcheck=false;
                 minutenum = 0;
                 secondnum = 0;
@@ -141,6 +155,17 @@ public class TimerFragment extends Fragment {
         });
 
         food_listview();
+
+        food_add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity()
+                        .getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.myframe, new FoodAddFragment())
+                        .commit();
+            }
+        });
 
     }
 
@@ -168,6 +193,11 @@ public class TimerFragment extends Fragment {
         layout3 = (LinearLayout)getActivity().findViewById(R.id.layout3);
 
         upperimg = (ImageView)getActivity().findViewById(R.id.upper_img);
+
+        mp = MediaPlayer.create(getActivity(), R.raw.sound);
+        mp.setLooping(false);
+
+        food_add = (Button)getActivity().findViewById(R.id.food_add);
 
     }
 
@@ -323,12 +353,12 @@ public class TimerFragment extends Fragment {
         upperimg.setVisibility(View.VISIBLE);
 
         //맨처음 강불로 시작
-        //((Bluetooth)getActivity()).sendData("4");
+        ((Bluetooth)getActivity()).sendData("4");
         Toast.makeText(getContext(), "불 세기 MAX로 전환합니다.", Toast.LENGTH_SHORT).show();
 
         //12분동안 요리
-        textview_m.setText("12");
-        textview_s.setText("00");
+        textview_m.setText("00");
+        textview_s.setText("20");
         if(startcheck==false){
             startcheck=true;
             minute = textview_m.getText().toString();
@@ -348,14 +378,27 @@ public class TimerFragment extends Fragment {
             public void onTick(long remain_time_millisec) {
                 timeleft = (remain_time_millisec/1000) + 1; // 남은시간(초)
                 //Toast.makeText(getContext(), String.valueOf(remain_time_millisec), Toast.LENGTH_SHORT).show();
-                if(timeleft == 420) // 타이머 7분남았을때
-                    //((Bluetooth)getActivity()).sendData("2");
+                if(timeleft == 10){
+                    // 타이머 7분남았을때
+                    ((Bluetooth)getActivity()).sendData("2");
                     Toast.makeText(getContext(), "중불로 전환합니다.", Toast.LENGTH_SHORT).show();
+                }
             }
 
 
             @Override
             public void onFinish() {
+                mp.start();
+                /*timerTask = new TimerTask() {
+                    @Override
+                    public void run() {
+                        makeNotification();
+                    }
+                };
+                start_alarm = new Timer();
+                start_alarm.schedule(timerTask,1000);*/
+
+
                 // 끝나면 레이아웃 원상복귀
                 layout1.setVisibility(View.VISIBLE);
                 layout2.setVisibility(View.VISIBLE);
@@ -363,7 +406,7 @@ public class TimerFragment extends Fragment {
                 upperimg.setVisibility(View.GONE);
                 //타이머 다 돌았을때 => 전원 꺼짐
                 Toast.makeText(getContext(), "요리 완료. 불이 꺼집니다.", Toast.LENGTH_SHORT).show();
-                //((Bluetooth)getActivity()).sendData("0");
+                ((Bluetooth)getActivity()).sendData("0");
             }
         }.start();
     }
@@ -371,7 +414,7 @@ public class TimerFragment extends Fragment {
     //계란 완숙
     public void over_hard(){
         //맨처음 강불로 시작
-        //((Bluetooth)getActivity()).sendData("4");
+        ((Bluetooth)getActivity()).sendData("4");
         Toast.makeText(getContext(), "불 세기 MAX로 전환합니다.", Toast.LENGTH_SHORT).show();
 
         //16분동안 요리
@@ -397,7 +440,7 @@ public class TimerFragment extends Fragment {
                 timeleft = (remain_time_millisec/1000) + 1; //남은시간(초)
                 //Toast.makeText(getContext(), String.valueOf(remain_time_millisec), Toast.LENGTH_SHORT).show();
                 if(timeleft == 720) //타이머 12분 남았을때
-                    //((Bluetooth)getActivity()).sendData("2");
+                    ((Bluetooth)getActivity()).sendData("2");
                     Toast.makeText(getContext(), "중불로 전환합니다.", Toast.LENGTH_SHORT).show();
             }
 
@@ -406,10 +449,34 @@ public class TimerFragment extends Fragment {
             public void onFinish() {
                 //타이머 다 돌았을때 => 전원 꺼짐
                 Toast.makeText(getContext(), "요리 완료. 불이 꺼집니다.", Toast.LENGTH_SHORT).show();
-                //((Bluetooth)getActivity()).sendData("0");
+                ((Bluetooth)getActivity()).sendData("0");
             }
         }.start();
     }
+
+    /*public void makeNotification(){
+        NotificationManager manager= (NotificationManager)getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+        Notification.Builder builder= new Notification.Builder(getActivity());
+        builder.setSmallIcon(R.mipmap.ic_launcher);
+        builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
+        builder.setContentTitle("OFFer");
+        builder.setContentText("반숙이 완성되었습니다.");
+        builder.setVibrate(new long[]{0,3000});
+        Uri soundUri= RingtoneManager.getActualDefaultRingtoneUri(getActivity(), RingtoneManager.TYPE_NOTIFICATION);
+        builder.setSound(soundUri);
+        builder.setAutoCancel(true);
+        Intent intent = new Intent(getActivity(), TimerFragment.class);
+
+        PendingIntent pIntent = PendingIntent.getActivity(getActivity(),
+                1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(pIntent);
+
+
+
+        Notification notification= builder.build();
+        //buid() 안되면 build.gradle(app)에서 minSdkVersion 16으로 고치기
+        manager.notify(1, notification);
+    }*/
 
 
 
